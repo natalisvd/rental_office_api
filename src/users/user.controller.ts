@@ -5,7 +5,6 @@ import {
   HttpStatus,
   Patch,
   Req,
-  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import {

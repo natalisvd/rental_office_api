@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IWorkspace } from './workplace.types';
+import { IWorkspace } from './workspace.types';
 
 const WorkspaceSchema = new Schema<IWorkspace>({
   office: { type: String, ref: 'Office', required: true },
