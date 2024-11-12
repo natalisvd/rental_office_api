@@ -19,5 +19,5 @@ export const config = {
   FE_URL:
     process.env.NODE_ENV === 'production'
       ? String(process.env.FE_URL)
-      : 'http://localhost:3000/',
+      : 'http://localhost:4200/',
 };
