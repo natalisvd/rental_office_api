@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UserPresenter } from './user-presenter';
-import User from '../user.schema';
+import { IUser } from '../user.types';
 
 export class GetAllUserPresenter {
   @ApiProperty({
@@ -17,8 +17,8 @@ export class GetAllUserPresenter {
   })
   count: number;
 
-  constructor(users: User[], count: number) {
-    this.users = users.map((user) => new UserPresenter(user));
+  constructor(users: IUser[], count: number) {
+    this.users = users.map(user => new UserPresenter(user));
     this.count = count;
   }
 }

@@ -1,46 +1,41 @@
 // nest
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InjectModel } from '@nestjs/sequelize';
+import { Model } from 'mongoose';
 
-// schema
-import User from 'src/users/user.schema';
-
-// dto's
 import { CreateUserDto, SignInDto } from 'src/users/dto';
 import { SignInPresenter, SignUpPresenter } from './dto';
 
-// utils
 import { hashPassword, verifyPassword } from './utils/passwordUtils';
 
-// types
 import { ITokens } from './auth.types';
 import { IUser } from 'src/users/user.types';
 
-// config
 import { config } from '../config';
 
-// constants
-import { vocabulary } from 'src/shared';
+import { vocabulary, modelsVocabulary } from 'src/shared';
 
 const {
-  auth: { WRONG_PASSWORD, USER_IS_NOT_ACTIVE },
+  auth: { WRONG_PASSWORD },
   users: { USER_NOT_FOUND: NOT_FOUND, ALREADY_EXISTS },
 } = vocabulary;
+
+const { USER_MODEL } = modelsVocabulary;
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User) readonly userModel: typeof User,
+    @Inject(USER_MODEL) private readonly userModel: Model<IUser>,
     readonly jwtService: JwtService,
   ) {}
 
   async signUp(signUpDto: CreateUserDto): Promise<SignUpPresenter> {
-    const user = await this.userModel.scope('withPassword').findOne({
+    const user = await this.userModel.findOne({
       where: { email: signUpDto.email },
     });
 
@@ -55,16 +50,13 @@ export class AuthService {
 
     const createdUser = await this.userModel.create(userAttributes);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: p, ...userWithoutPassword } = createdUser.dataValues;
-
-    return userWithoutPassword;
+    return createdUser;
   }
 
   async signIn(signInDto: SignInDto): Promise<SignInPresenter> {
     const { password, email } = signInDto;
 
-    const user = await this.userModel.scope('withPassword').findOne({
+    const user = await this.userModel.findOne({
       where: { email },
     });
 
@@ -72,38 +64,25 @@ export class AuthService {
       throw new NotFoundException(NOT_FOUND);
     }
 
-    if (!user.active) {
-      throw new BadRequestException(USER_IS_NOT_ACTIVE);
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { photo, ...userWithoutPhoto } = user.dataValues;
-
     const match = await verifyPassword(password, user.password);
     if (!match) {
       throw new BadRequestException(WRONG_PASSWORD);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: p, ...userWithoutPassword } = user.dataValues;
+    const { accessToken, refreshToken } = this.generateTokens(user);
 
-    const { accessToken, refreshToken } = this.generateTokens(userWithoutPhoto);
-
-    return new SignInPresenter(userWithoutPassword, accessToken, refreshToken);
+    return new SignInPresenter(user, accessToken, refreshToken);
   }
 
   async refresh(id: string): Promise<ITokens | void> {
-    const user = await this.userModel.scope('withPassword').findOne({
+    const user = await this.userModel.findOne({
       where: { id },
     });
     if (!user) {
       throw new NotFoundException(NOT_FOUND);
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { photo, ...userWithoutPhoto } = user.dataValues;
-    if (userWithoutPhoto) {
-      return this.generateTokens(userWithoutPhoto);
-    }
+
+    return this.generateTokens(user);
   }
 
   generateTokens(user: Partial<IUser>): ITokens {

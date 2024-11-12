@@ -1,31 +1,33 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-
-import User from './user.schema';
+import { Model } from 'mongoose';
 
 import { GetAllUserPresenter, PatchUserDto, UserPresenter } from './dto';
 
 import { hashPassword } from 'src/auth/utils/passwordUtils';
 
-import { IUser, UpdateUserWithFile } from './user.types';
+import { IUser } from './user.types';
 
-import { vocabulary } from 'src/shared';
+import { vocabulary, modelsVocabulary } from 'src/shared';
 
 const {
   users: { USER_NOT_FOUND, EMAIL_IS_TAKEN },
 } = vocabulary;
 
+const { USER_MODEL } = modelsVocabulary;
+
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User) readonly userModel: typeof User) {}
+  constructor(@Inject(USER_MODEL) private readonly userModel: Model<IUser>) {}
 
   async findAll(): Promise<GetAllUserPresenter> {
-    const users = await this.userModel.findAndCountAll();
+    const users = await this.userModel.find();
 
-    return new GetAllUserPresenter(users.rows, users.count);
+    return new GetAllUserPresenter(users, users.length);
   }
 
   async patch({
@@ -54,7 +56,7 @@ export class UsersService {
 
     const updateObject = {
       ...updateUserDto,
-    } as UpdateUserWithFile;
+    };
 
     user.set(updateObject);
 
@@ -63,7 +65,7 @@ export class UsersService {
     return updatedUser;
   }
 
-  findOne(whereCondition: Partial<IUser>): Promise<User | null> {
+  findOne(whereCondition: Partial<IUser>): Promise<IUser | null> {
     return this.userModel.findOne({ where: whereCondition });
   }
 }

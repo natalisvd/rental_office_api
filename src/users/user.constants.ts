@@ -14,8 +14,4 @@ export const userFieldLengths = {
   password: {
     min: 16,
   },
-  bio: {
-    min: 20,
-    max: 3000,
-  },
 };
