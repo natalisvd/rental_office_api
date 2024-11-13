@@ -9,12 +9,12 @@ const { HOST, SERVER_PORT } = config;
 export class ResourceService {
   constructor() {}
 
-  getMapInfo(): IResponse {
+  getMapInfo(id: string): IResponse {
     const image = `http://${HOST}:${SERVER_PORT}/assets/map.jpeg`;
     return {
       is_success: true,
       data: {
-        id: 1,
+        id: id,
         name: 'test office',
         image: image,
         resources: [
