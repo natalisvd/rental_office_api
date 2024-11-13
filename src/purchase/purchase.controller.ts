@@ -34,8 +34,8 @@ export class PurchaseController {
   }
 
   @Post('/')
-  create(@Body() createOfficeDto: Partial<IPurchase>) {
-    return this.purchaseService.create(createOfficeDto);
+  create(@Body() createPurchaseDto: Partial<IPurchase>) {
+    return this.purchaseService.create(createPurchaseDto);
   }
 
   @Patch('/')

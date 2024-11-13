@@ -10,8 +10,8 @@ import {
 } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
 import { ApiTags } from '@nestjs/swagger';
-import { IOffice } from 'src/office/office.types';
 import { ICustomRequest } from 'src/shared';
+import { IWorkspace } from './workspace.types';
 
 @Controller('workspace')
 @ApiTags('Workspace')
@@ -34,13 +34,13 @@ export class WorkspaceController {
   }
 
   @Post('/')
-  create(@Body() createWorkspaceDto: Partial<IOffice>) {
+  create(@Body() createWorkspaceDto: Partial<IWorkspace>) {
     return this.workspaceService.create(createWorkspaceDto);
   }
 
   @Patch('/')
   patch(
-    @Body() updateWorkspaceDto: Partial<IOffice>,
+    @Body() updateWorkspaceDto: Partial<IWorkspace>,
     @Req() req: ICustomRequest,
   ) {
     return this.workspaceService.patch(updateWorkspaceDto, req.user._id);

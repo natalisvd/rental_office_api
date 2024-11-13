@@ -18,10 +18,10 @@ export class PurchaseService {
     return purchases;
   }
 
-  async patch(updateOfficeDto: Partial<IPurchase>, userId: string) {
+  async patch(updatePurchaseDto: Partial<IPurchase>, userId: string) {
     return this.purchaseModel.findOneAndUpdate(
       { _id: userId },
-      updateOfficeDto,
+      updatePurchaseDto,
       {
         new: true,
       },
@@ -36,8 +36,8 @@ export class PurchaseService {
     return await this.purchaseModel.findByIdAndDelete(id);
   }
 
-  async create(createOfficeDto: Partial<IPurchase>) {
-    const createdJob = await new Purchase(createOfficeDto);
+  async create(createPurchaseDto: Partial<IPurchase>) {
+    const createdJob = await new Purchase(createPurchaseDto);
     return createdJob.save();
   }
 

@@ -18,10 +18,10 @@ export class WorkspaceService {
     return workspaces;
   }
 
-  async patch(updateOfficeDto: Partial<IWorkspace>, userId: string) {
+  async patch(updateWorkspaceDto: Partial<IWorkspace>, userId: string) {
     return this.workspaceModel.findOneAndUpdate(
       { _id: userId },
-      updateOfficeDto,
+      updateWorkspaceDto,
       {
         new: true,
       },
@@ -36,8 +36,8 @@ export class WorkspaceService {
     return await this.workspaceModel.findByIdAndDelete(id);
   }
 
-  async create(createOfficeDto: Partial<IWorkspace>) {
-    const createdJob = await new Workspace(createOfficeDto);
+  async create(createWorkspaceDto: Partial<IWorkspace>) {
+    const createdJob = await new Workspace(createWorkspaceDto);
     return createdJob.save();
   }
 
