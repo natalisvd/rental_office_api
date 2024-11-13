@@ -8,9 +8,12 @@ import {
   Post,
   Req,
 } from '@nestjs/common';
-import { WorkspaceService } from './workspace.service';
 import { ApiTags } from '@nestjs/swagger';
+
+import { WorkspaceService } from './workspace.service';
+
 import { ICustomRequest } from 'src/shared';
+
 import { IWorkspace } from './workspace.types';
 
 @Controller('workspace')

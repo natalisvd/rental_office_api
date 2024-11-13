@@ -9,7 +9,7 @@ import { CustomValidationPipe } from './shared/CustomValidationPipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
-  app.setGlobalPrefix('v1/rest-path-of-api');
+  app.setGlobalPrefix('v1/');
   app.enableCors();
   app.useGlobalPipes(
     new CustomValidationPipe({
